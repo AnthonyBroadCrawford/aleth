@@ -36,7 +36,7 @@ BOOST_FIXTURE_TEST_SUITE(OverlayDBTests, TestOutputHelperFixture)
 BOOST_AUTO_TEST_CASE(basicUsage)
 {
     TransientDirectory td;
-    std::unique_ptr<db::DatabaseFace> db(DBFactory::create(td.path()));
+	std::unique_ptr<db::DatabaseFace> db = DBFactory::create(DatabaseKind::LevelDB, td.path());
     BOOST_REQUIRE(db);
 
     OverlayDB odb(std::move(db));
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(basicUsage)
 BOOST_AUTO_TEST_CASE(auxMem)
 {
     TransientDirectory td;
-    std::unique_ptr<db::DatabaseFace> db(DBFactory::create(td.path()));
+	std::unique_ptr<db::DatabaseFace> db = DBFactory::create(DatabaseKind::LevelDB, td.path());
     BOOST_REQUIRE(db);
 
     OverlayDB odb(std::move(db));
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(auxMem)
 BOOST_AUTO_TEST_CASE(rollback)
 {
     TransientDirectory td;
-    std::unique_ptr<db::DatabaseFace> db(DBFactory::create(td.path()));
+	std::unique_ptr<db::DatabaseFace> db = DBFactory::create(DatabaseKind::LevelDB, td.path());
     BOOST_REQUIRE(db);
 
     OverlayDB odb(std::move(db));

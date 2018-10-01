@@ -33,9 +33,6 @@ enum class DatabaseKind
     MemoryDB
 };
 
-/// Returns the db options parsed from command line.
-std::vector<std::pair<std::string, std::string>>& dbOptions() noexcept;
-
 /// Provide a set of program options related to databases
 ///
 /// @param _lineLength  The line length for description text wrapping, the same as in

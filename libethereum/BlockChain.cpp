@@ -271,6 +271,11 @@ unsigned BlockChain::open(fs::path const& _path, WithExisting _we)
                 BOOST_THROW_EXCEPTION(DatabaseAlreadyOpen());
             }
         }
+        else
+        {
+            cwarn << "Unknown database error occurred during in-memory database creation";
+            BOOST_THROW_EXCEPTION(UnknownDatabaseError());
+        }
     }
 
     if (_we != WithExisting::Verify && !details(m_genesisHash))
@@ -352,7 +357,7 @@ void BlockChain::rebuild(fs::path const& _path, std::function<void(unsigned, uns
     if (!db::isMemoryDB())
         fs::rename(extrasPath / fs::path("extras"), extrasPath / fs::path("extras.old"));
     std::unique_ptr<db::DatabaseFace> oldExtrasDB(db::DBFactory::create(extrasPath / fs::path("extras.old")));
-    m_extrasDB.reset(db::DBFactory::create(extrasPath / fs::path("extras")).get());
+    m_extrasDB = db::DBFactory::create(extrasPath / fs::path("extras"));
 
     // Open a fresh state DB
     Block s = genesisBlock(State::openDB(path.string(), m_genesisHash, WithExisting::Kill));
