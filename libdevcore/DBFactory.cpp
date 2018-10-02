@@ -19,6 +19,7 @@
 #include "FileSystem.h"
 #include "LevelDB.h"
 #include "MemoryDB.h"
+#include "libethcore\Exceptions.h"
 
 namespace dev
 {
@@ -30,14 +31,14 @@ namespace po = boost::program_options;
 auto g_kind = DatabaseKind::LevelDB;
 fs::path g_dbPath = getDataDir();
 
-/// A helper type to build the tabled of DB implementations.
+/// A helper type to build the table of DB implementations.
 ///
 /// More readable than std::tuple.
 /// Fields are not initialized to allow usage of construction with initializer lists {}.
 struct DBKindTableEntry
 {
     DatabaseKind kind;
-    const char* name;
+    char const* name;
 };
 
 /// The table of available DB implementations.
@@ -49,7 +50,7 @@ DBKindTableEntry dbKindsTable[] = {
     {DatabaseKind::MemoryDB, "memorydb"},
 };
 
-void setDatabaseKind(const std::string& _name)
+void setDatabaseKind(std::string const& _name)
 {
     for (auto& entry : dbKindsTable)
     {
@@ -60,11 +61,11 @@ void setDatabaseKind(const std::string& _name)
         }
     }
 
-    BOOST_THROW_EXCEPTION(std::system_error(std::make_error_code(std::errc::invalid_argument),
-        "invalid database kind supplied: " + _name));
+    BOOST_THROW_EXCEPTION(eth::InvalidDatabaseKind()
+                          << errinfo_comment("invalid database kind supplied: " + _name));
 }
 
-void setDatabasePath(const std::string& _path)
+void setDatabasePath(std::string const& _path)
 {
     g_dbPath = fs::path(_path);
 }
@@ -74,20 +75,20 @@ bool isMemoryDB()
     return g_kind == DatabaseKind::MemoryDB;
 }
 
-DatabaseKind getDatabaseKind()
+DatabaseKind databaseKind()
 {
     return g_kind;
 }
 
-fs::path getDatabasePath()
+fs::path databasePath()
 {
     return g_dbPath;
 }
 
-po::options_description dbProgramOptions(unsigned _lineLength)
+po::options_description databaseProgramOptions(unsigned _lineLength)
 {
     // It must be a static object because boost expects const char*.
-    static const std::string description = [] {
+    static std::string const description = [] {
         std::string names;
         for (auto const& entry : dbKindsTable)
         {
@@ -141,8 +142,7 @@ std::unique_ptr<DatabaseFace> DBFactory::create(DatabaseKind _kind, fs::path _pa
         break;
     default:
         assert(false);
-        return std::unique_ptr<DatabaseFace>(new LevelDB(_path));
-        break;
+        return {};
     }
 }
 

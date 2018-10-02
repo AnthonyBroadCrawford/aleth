@@ -37,12 +37,12 @@ enum class DatabaseKind
 ///
 /// @param _lineLength  The line length for description text wrapping, the same as in
 ///                     boost::program_options::options_description::options_description().
-boost::program_options::options_description dbProgramOptions(
+boost::program_options::options_description databaseProgramOptions(
     unsigned _lineLength = boost::program_options::options_description::m_default_line_length);
 
 bool isMemoryDB();
-DatabaseKind getDatabaseKind();
-boost::filesystem::path getDatabasePath();
+DatabaseKind databaseKind();
+boost::filesystem::path databasePath();
 
 class DBFactory
 {

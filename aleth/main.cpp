@@ -394,12 +394,12 @@ int main(int argc, char** argv)
     po::options_description generalOptions("GENERAL OPTIONS", c_lineWidth);
     auto addGeneralOption = generalOptions.add_options();
     addGeneralOption("data-dir,d", po::value<string>()->value_name("<path>"),
-        ("Load database from path (default: " + getDataDir().string() + ")").c_str());
+        ("Load configuration files and keystore from path (default: " + getDataDir().string() + ")").c_str());
     addGeneralOption("version,V", "Show the version and exit");
     addGeneralOption("help,h", "Show this help message and exit\n");
 
     po::options_description vmOptions = vmProgramOptions(c_lineWidth);
-    po::options_description dbOptions = db::dbProgramOptions(c_lineWidth);
+    po::options_description dbOptions = db::databaseProgramOptions(c_lineWidth);
     po::options_description minerOptions = MinerCLI::createProgramOptions(c_lineWidth);
 
     po::options_description allowedOptions("Allowed options");
@@ -770,7 +770,7 @@ int main(int argc, char** argv)
         AccountManager::streamAccountHelp(cout);
         AccountManager::streamWalletHelp(cout);
         cout << clientDefaultMode << clientTransacting << clientNetworking << clientMining << minerOptions;
-        cout << importExportMode << vmOptions << dbOptions << loggingProgramOptions << generalOptions;
+        cout << importExportMode << dbOptions << vmOptions << loggingProgramOptions << generalOptions;
         return 0;
     }
 
@@ -860,7 +860,7 @@ int main(int argc, char** argv)
     if (testingMode)
         chainParams.allowFutureBlocks = true;
 
-    dev::WebThreeDirect web3(WebThreeDirect::composeClientVersion("aleth"), db::getDatabasePath(),
+    dev::WebThreeDirect web3(WebThreeDirect::composeClientVersion("aleth"), db::databasePath(),
         snapshotPath, chainParams, withExisting, nodeMode == NodeMode::Full ? caps : set<string>(),
         netPrefs, &nodesState, testingMode);
 

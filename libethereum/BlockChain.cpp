@@ -211,7 +211,7 @@ void BlockChain::init(ChainParams const& _p)
 
 unsigned BlockChain::open(fs::path const& _path, WithExisting _we)
 {
-    fs::path path = _path.empty() ? db::getDatabasePath() : _path;
+    fs::path path = _path.empty() ? db::databasePath() : _path;
     fs::path chainPath = path / fs::path(toHex(m_genesisHash.ref().cropped(0, 4)));
     fs::path extrasPath = chainPath / fs::path(toString(c_databaseVersion));
     unsigned lastMinor = c_minorProtocolVersion;
@@ -340,7 +340,7 @@ void BlockChain::close()
 
 void BlockChain::rebuild(fs::path const& _path, std::function<void(unsigned, unsigned)> const& _progress)
 {
-    fs::path path = _path.empty() ? db::getDatabasePath() : _path;
+    fs::path path = _path.empty() ? db::databasePath() : _path;
     fs::path chainPath = path / fs::path(toHex(m_genesisHash.ref().cropped(0, 4)));
     fs::path extrasPath = chainPath / fs::path(toString(c_databaseVersion));
 

@@ -59,7 +59,7 @@ State::State(State const& _s):
 
 OverlayDB State::openDB(fs::path const& _basePath, h256 const& _genesisHash, WithExisting _we)
 {
-    fs::path path = _basePath.empty() ? db::getDatabasePath() : _basePath;
+    fs::path path = _basePath.empty() ? db::databasePath() : _basePath;
 
     if (!db::isMemoryDB() && _we == WithExisting::Kill)
     {
