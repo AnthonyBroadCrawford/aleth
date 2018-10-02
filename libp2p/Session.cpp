@@ -23,7 +23,6 @@
 #include "Session.h"
 
 #include "Host.h"
-#include "PeerCapability.h"
 #include <libdevcore/Common.h>
 #include <libdevcore/CommonIO.h>
 #include <libdevcore/Exceptions.h>
@@ -129,7 +128,9 @@ bool Session::readPacket(uint16_t _capId, PacketType _packetType, RLP const& _r)
 
         for (auto const& i: m_capabilities)
             if (i.second->canHandle(_packetType))
-                return i.second->enabled() ? i.second->interpret(_packetType, _r) : true;
+                return capabilityEnabled(i.first) /*i.second->enabled()*/ ?
+                           i.second->interpret(_packetType, _r) :
+                           true;
 
         return false;
     }

@@ -61,8 +61,15 @@ protected:
 class TestHostCap: public HostCapability<TestCap>, public Worker
 {
 public:
-    TestHostCap(Host const& _host) : HostCapability<TestCap>(_host), Worker("test") {}
+    TestHostCap(Host const& _host) : Worker("test") {}
     virtual ~TestHostCap() {}
+
+    void onConnect(NodeID const& _nodeID, u256 const& _peerCapabilityVersion) override {}
+    bool interpretCapabilityPacket(NodeID const& _nodeID, unsigned _id, RLP const&) override
+    {
+        return true;
+    }
+    void onDisconnect(NodeID const& _nodeID) override {}
 };
 
 BOOST_AUTO_TEST_SUITE(libp2p)

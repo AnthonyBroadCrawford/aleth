@@ -74,14 +74,22 @@ bool TestCapability::interpretCapabilityPacket(unsigned _id, RLP const& _r)
 class TestHostCapability: public HostCapability<TestCapability>, public Worker
 {
 public:
-    explicit TestHostCapability(Host const& _host)
-      : HostCapability<TestCapability>(_host), Worker("test")
-    {}
+    explicit TestHostCapability(Host const& _host) : Worker("test"), m_host(_host) {}
     virtual ~TestHostCapability() {}
+
+    void onStarting() override {}
+    void onStopping() override {}
+
+    void onConnect(NodeID const& _nodeID, u256 const& _peerCapabilityVersion) override {}
+    bool interpretCapabilityPacket(NodeID const& _nodeID, unsigned _id, RLP const&) override
+    {
+        return true;
+    }
+    void onDisconnect(NodeID const& _nodeID) override {}
 
     void sendTestMessage(NodeID const& _id, int _x)
     {
-        for (auto i : peerSessions())
+        for (auto i : m_host.peerSessions(name(), version()))
             if (_id == i.second->id)
                 capabilityFromSession<TestCapability>(*i.first)->sendTestMessage(_x);
     }
@@ -90,7 +98,7 @@ public:
     { 
         int cnt = 0;
         int checksum = 0;
-        for (auto i : peerSessions())
+        for (auto i : m_host.peerSessions(name(), version()))
             if (_id == i.second->id)
             {
                 cnt += capabilityFromSession<TestCapability>(*i.first)->countReceivedMessages();
@@ -99,6 +107,8 @@ public:
 
         return std::pair<int, int>(cnt, checksum);
     }
+
+    Host const& m_host;
 };
 
 BOOST_FIXTURE_TEST_SUITE(p2pCapability, P2PFixture)

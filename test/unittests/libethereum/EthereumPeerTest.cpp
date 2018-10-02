@@ -31,14 +31,16 @@ public:
     string name() const override { return "mock capability name"; }
     u256 version() const override { return 0; }
     unsigned messageCount() const override { return 0; }
-    std::shared_ptr<PeerCapabilityFace> newPeerCapability(
-        std::shared_ptr<SessionFace> const&, unsigned, CapDesc const&) override
-    {
-        return std::shared_ptr<PeerCapabilityFace>();
-    }
 
     void onStarting() override {}
     void onStopping() override {}
+
+    void onConnect(NodeID const& _nodeID, u256 const& _peerCapabilityVersion) override {}
+    bool interpretCapabilityPacket(NodeID const& _nodeID, unsigned _id, RLP const&) override
+    {
+        return true;
+    }
+    void onDisconnect(NodeID const& _nodeID) override {}
 };
 
 class MockSession: public SessionFace
@@ -84,6 +86,8 @@ public:
 
     ReputationManager& repMan() override { return m_repMan; }
 
+    void disableCapability(CapDesc const& _capDesc, std::string const& _problem) override {}
+
     ReputationManager m_repMan;
     map<CapDesc, std::shared_ptr<PeerCapabilityFace>> m_capabilities;
     bytes m_bytesSent;
@@ -94,21 +98,21 @@ public:
 class MockEthereumPeerObserver: public EthereumPeerObserverFace
 {
 public:
-    void onPeerStatus(std::shared_ptr<EthereumPeer>) override {}
+    void onPeerStatus(p2p::NodeID const&, EthereumPeerStatus const& _status) override {}
 
-    void onPeerTransactions(std::shared_ptr<EthereumPeer>, RLP const&) override {}
+    void onPeerTransactions(p2p::NodeID const&, RLP const&) override {}
 
-    void onPeerBlockHeaders(std::shared_ptr<EthereumPeer>, RLP const&) override {}
+    void onPeerBlockHeaders(p2p::NodeID const&, RLP const&) override {}
 
-    void onPeerBlockBodies(std::shared_ptr<EthereumPeer>, RLP const&) override {}
+    void onPeerBlockBodies(p2p::NodeID const&, RLP const&) override {}
 
-    void onPeerNewHashes(std::shared_ptr<EthereumPeer>, std::vector<std::pair<h256, u256>> const&) override {}
+    void onPeerNewHashes(p2p::NodeID const&, std::vector<std::pair<h256, u256>> const&) override {}
 
-    void onPeerNewBlock(std::shared_ptr<EthereumPeer>, RLP const&) override {}
+    void onPeerNewBlock(p2p::NodeID const&, RLP const&) override {}
 
-    void onPeerNodeData(std::shared_ptr<EthereumPeer>, RLP const&) override {}
+    void onPeerNodeData(p2p::NodeID const&, RLP const&) override {}
 
-    void onPeerReceipts(std::shared_ptr<EthereumPeer>, RLP const&) override {}
+    void onPeerReceipts(p2p::NodeID const&, RLP const&) override {}
 
     void onPeerAborting() override {}
 };
