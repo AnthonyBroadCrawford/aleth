@@ -19,7 +19,7 @@
 #include "FileSystem.h"
 #include "LevelDB.h"
 #include "MemoryDB.h"
-#include "libethcore\Exceptions.h"
+#include "libethcore/Exceptions.h"
 
 namespace dev
 {
