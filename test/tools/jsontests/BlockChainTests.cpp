@@ -651,8 +651,7 @@ void overwriteBlockHeaderForTest(mObject const& _blObj, TestBlock& _block, Chain
             ho.count("number") ? toU256(ho["number"]) : header.number(),
             ho.count("gasLimit") ? toU256(ho["gasLimit"]) : header.gasLimit(),
             ho.count("gasUsed") ? toU256(ho["gasUsed"]) : header.gasUsed(),
-            ho.count("timestamp") ? max<u256>(toU256(ho["timestamp"]), 0) :
-                                    max<int64_t>(header.timestamp(), 0),
+            ho.count("timestamp") ? toU256(ho["timestamp"]) : max<int64_t>(header.timestamp(), 0),
             ho.count("extraData") ? importByteArray(ho["extraData"].get_str()) :
                                     header.extraData());
 
