@@ -51,8 +51,8 @@ public:
     ~DBFactory() = delete;
 
     static std::unique_ptr<DatabaseFace> create();
-    static std::unique_ptr<DatabaseFace> create(boost::filesystem::path _path);
-    static std::unique_ptr<DatabaseFace> create(DatabaseKind _kind, boost::filesystem::path _path);
+    static std::unique_ptr<DatabaseFace> create(boost::filesystem::path const& _path);
+    static std::unique_ptr<DatabaseFace> create(DatabaseKind _kind, boost::filesystem::path const& _path);
 
 private:
 };

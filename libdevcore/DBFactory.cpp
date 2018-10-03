@@ -123,12 +123,12 @@ std::unique_ptr<DatabaseFace> DBFactory::create()
     return create(g_dbPath);
 }
 
-std::unique_ptr<DatabaseFace> DBFactory::create(fs::path _path)
+std::unique_ptr<DatabaseFace> DBFactory::create(fs::path const& _path)
 {
     return create(g_kind, _path);
 }
 
-std::unique_ptr<DatabaseFace> DBFactory::create(DatabaseKind _kind, fs::path _path)
+std::unique_ptr<DatabaseFace> DBFactory::create(DatabaseKind _kind, fs::path const& _path)
 {
     switch (_kind)
     {

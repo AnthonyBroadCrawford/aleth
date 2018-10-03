@@ -83,23 +83,20 @@ OverlayDB State::openDB(fs::path const& _basePath, h256 const& _genesisHash, Wit
     catch (boost::exception const& ex)
     {
         cwarn << boost::diagnostic_information(ex) << '\n';
-        if (!db::isMemoryDB() && fs::space(path / fs::path("state")).available < 1024)
+        if (db::isMemoryDB())
+            throw;
+        else if (fs::space(path / fs::path("state")).available < 1024)
         {
             cwarn << "Not enough available space found on hard drive. Please free some up and then re-run. Bailing.";
             BOOST_THROW_EXCEPTION(NotEnoughAvailableSpace());
         }
-        else if (!db::isMemoryDB())
+        else
         {
             cwarn <<
                 "Database " <<
                 (path / fs::path("state")) <<
                 "already open. You appear to have another instance of ethereum running. Bailing.";
             BOOST_THROW_EXCEPTION(DatabaseAlreadyOpen());
-        }
-        else
-        {
-            cwarn << "Unknown error when creating in-memory database.";
-            BOOST_THROW_EXCEPTION(UnknownDatabaseError());
         }
     }
 }

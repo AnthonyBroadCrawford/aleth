@@ -274,7 +274,7 @@ unsigned BlockChain::open(fs::path const& _path, WithExisting _we)
         else
         {
             cwarn << "Unknown database error occurred during in-memory database creation";
-            BOOST_THROW_EXCEPTION(UnknownDatabaseError());
+            throw;
         }
     }
 
@@ -340,6 +340,12 @@ void BlockChain::close()
 
 void BlockChain::rebuild(fs::path const& _path, std::function<void(unsigned, unsigned)> const& _progress)
 {
+    if (db::isMemoryDB())
+    {
+        cwarn <<"In-memory database detected, skipping rebuild (since there's no existing database to rebuild)";
+        return;
+    }
+
     fs::path path = _path.empty() ? db::databasePath() : _path;
     fs::path chainPath = path / fs::path(toHex(m_genesisHash.ref().cropped(0, 4)));
     fs::path extrasPath = chainPath / fs::path(toString(c_databaseVersion));
@@ -354,8 +360,7 @@ void BlockChain::rebuild(fs::path const& _path, std::function<void(unsigned, uns
 
     // Keep extras DB around, but under a temp name
     m_extrasDB.reset();
-    if (!db::isMemoryDB())
-        fs::rename(extrasPath / fs::path("extras"), extrasPath / fs::path("extras.old"));
+    fs::rename(extrasPath / fs::path("extras"), extrasPath / fs::path("extras.old"));
     std::unique_ptr<db::DatabaseFace> oldExtrasDB(db::DBFactory::create(extrasPath / fs::path("extras.old")));
     m_extrasDB = db::DBFactory::create(extrasPath / fs::path("extras"));
 
@@ -413,8 +418,7 @@ void BlockChain::rebuild(fs::path const& _path, std::function<void(unsigned, uns
             _progress(d, originalNumber);
     }
 
-    if (!db::isMemoryDB())
-        fs::remove_all(path / fs::path("extras.old"));
+    fs::remove_all(path / fs::path("extras.old"));
 }
 
 string BlockChain::dumpDatabase() const
